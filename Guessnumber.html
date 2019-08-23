@@ -1,68 +1,90 @@
-<p class="guesses"></p>
 <p class="lastResult"></p>
-<p class="lowOrHi"></p>
-<label for="guessField">Enter a guess(0~10): </label><input type="text" id="guessField" class="guessField">
+<label for="guessField">Enter a guess: </label><input type="text" id="guessField" class="guessField">
 <input type="submit" value="Submit guess" class="guessSubmit">
 <script>
-let randomNumber = Math.floor(Math.random() * 10) + 1;
+//let answer = Math.floor(Math.random() * 10000);
+let answer ="0";
 
-const guesses = document.querySelector('.guesses');
 const lastResult = document.querySelector('.lastResult');
-const lowOrHi = document.querySelector('.lowOrHi');
 
 const guessSubmit = document.querySelector('.guessSubmit');
 const guessField = document.querySelector('.guessField');
 
+let guessCount = 1;
 let resetButton;
+answer = answerGenerate();
+guessSubmit.addEventListener('click', checkGuess);
 
-function checkGuess() {
-  let userGuess = Number(guessField.value);
-
-  if (userGuess === randomNumber) { //if guess equals to answer
-    lastResult.textContent = 'Congratulations! You got it right!';
-    lastResult.style.backgroundColor = 'green';
-    lowOrHi.textContent = '';
-    setGameOver(); //Gameover
-  } else {
-    lastResult.textContent = 'Wrong!';
-    lastResult.style.backgroundColor = 'red';
-    if(userGuess < randomNumber) { //Guess < answer
-      lowOrHi.textContent = 'Last guess was too low!';
-    } else if(userGuess > randomNumber) { //Guess > answer
-      lowOrHi.textContent = 'Last guess was too high!';
-    }
+function checkGuess(){
+  let hint='0000'
+  let userGuess = guessField.value;
+  if(guessCount === 1){ //hint field initialize
+    lastResult.textContent ='Previous guesses: ';
   }
- 
+  if(userGuess ===answer){ //True answer
+    hint = checkHint(userGuess);
+    lastResult.textContent += userGuess+'--'+hint+' '; //Print what user have guessed
+    lastResult.textContent += 'Congratulations!!';
+    setGameOver();
+  }
+  //else if(checkValid()){
+  else{
+    hint = checkHint(userGuess);
+    lastResult.textContent += userGuess+'--'+hint+' '; //Print what user have guessed
+  }
   guessCount++;
   guessField.value = '';
   guessField.focus();
+  
 }
-guessSubmit.addEventListener('click', checkGuess); //Listen for button clicks
+function checkHint(_userGuess){
+  let numberA =0;
+  let numberB =0;
+  let stringGuess =_userGuess.split('');
+  let stringAnswer =answer.split('');
+  /*
+  console.log(stringGuess);
+  console.log(_userGuess);
+  console.log(stringAnswer);
+  console.log(answer);
+  */
+ stringGuess.forEach((item ,index) =>{ //check A
+   if(item ==stringAnswer[index]){
+     numberA++;
+   }
+ });
 
-function setGameOver() {
-  guessField.disabled = true; //Disable input
-  guessSubmit.disabled = true; //Disable button click
+ stringGuess.forEach((item) =>{ //check B
+   if(stringAnswer.indexOf(item) !=-1){
+     numberB++;
+   }
+ });
+  return String(numberA) +'A'+String(numberB)+'B';
+}
+function setGameOver(){
+  guessField.disabled = true;
+  guessSubmit.disabled = true;
   resetButton = document.createElement('button');
   resetButton.textContent = 'Start new game';
   document.body.appendChild(resetButton);
   resetButton.addEventListener('click', resetGame);
 }
 
-function resetGame() {
-  const resetParas = document.querySelectorAll('.resultParas p');
+function resetGame(){
+  guessCount = 1;
+  const resetParas = document.querySelectorAll('p');
   for (let i = 0 ; i < resetParas.length ; i++) {
     resetParas[i].textContent = '';
   }
-
   resetButton.parentNode.removeChild(resetButton);
-
-  guessField.disabled = false; //Enable input
-  guessSubmit.disabled = false; //Enable button click
+  guessField.disabled = false;
+  guessSubmit.disabled = false;
   guessField.value = '';
   guessField.focus();
-
-  lastResult.style.backgroundColor = 'white';
-
-  randomNumber = Math.floor(Math.random() * 10) + 1;
+  answerGenerate(answer);
+}
+function answerGenerate(){
+  return '6789';
+  //return Math.floor(Math.random() * 10000);
 }
 </script>
