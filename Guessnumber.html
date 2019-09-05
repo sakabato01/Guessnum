@@ -1,19 +1,25 @@
 <p class="lastResult"></p>
+<p class="answerResult"></p>
 <label for="guessField">Enter a guess: </label><input type="text" id="guessField" class="guessField">
 <input type="submit" value="Submit guess" class="guessSubmit">
+<input type="button" value ="Answer" class="answerSubmit">
 <script>
 //let answer = Math.floor(Math.random() * 10000);
 let answer ="0";
 
 const lastResult = document.querySelector('.lastResult');
+const answerResult = document.querySelector('.answerResult');
 
 const guessSubmit = document.querySelector('.guessSubmit');
 const guessField = document.querySelector('.guessField');
+const answerSubmit = document.querySelector('.answerSubmit');
 
 let guessCount = 1;
 let resetButton;
+let answerCount =1;
 answer = answerGenerate();
 guessSubmit.addEventListener('click', checkGuess);
+answerSubmit.addEventListener('click', checkAnswer);
 
 function checkGuess(){
   let hint='0000'
@@ -37,10 +43,10 @@ function checkGuess(){
   guessField.focus();
   
 }
-function checkHint(_userGuess){
+function checkHint(userGuess){
   let numberA =0;
   let numberB =0;
-  let stringGuess =_userGuess.split('');
+  let stringGuess =userGuess.split('');
   let stringAnswer =answer.split('');
   /*
   console.log(stringGuess);
@@ -73,6 +79,7 @@ function setGameOver(){
 
 function resetGame(){
   guessCount = 1;
+  answerCount=1;
   const resetParas = document.querySelectorAll('p');
   for (let i = 0 ; i < resetParas.length ; i++) {
     resetParas[i].textContent = '';
@@ -84,8 +91,33 @@ function resetGame(){
   guessField.focus();
   answerGenerate(answer);
 }
+
 function answerGenerate(){
   return '6789';
-  //return Math.floor(Math.random() * 10000);
+}
+
+function checkAnswer(){ 
+  if(answerCount===1){  
+    answerCount=0;
+    let count =0;
+    let solGuess =answerRandom();
+    let solHint =checkHint(solGuess) +' '+String(solGuess);
+    while(checkHint(solGuess) !== '4A0B'){
+      printSol(solHint);
+      solGuess =answerRandom();
+      solHint =checkHint(solGuess) +' '+String(solGuess);
+    }
+    if(checkHint(solGuess) === '4A0B'){
+      printSol(solHint);
+    }
+  }
+}
+function answerRandom(){
+  let a = Math.floor(Math.random()*(10000-1111+1)+1111);
+  return String(a);
+}
+
+function printSol(solHint){
+  answerResult.textContent+=solHint+'/';//print on web
 }
 </script>
