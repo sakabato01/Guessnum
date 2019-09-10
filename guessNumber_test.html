@@ -1,0 +1,192 @@
+<p class="lastResult"></p>
+<p class="answerResult"></p>
+<label for="guessField">Enter a guess: </label><input type="text" id="guessField" class="guessField">
+<input type="submit" value="Submit guess" class="guessSubmit">
+<input type="button" value ="Answer" class="answerSubmit">
+<script>
+//let answer = Math.floor(Math.random() * 10000);
+let answer ="0";
+
+const lastResult = document.querySelector('.lastResult');
+const answerResult = document.querySelector('.answerResult');
+
+const guessSubmit = document.querySelector('.guessSubmit');
+const guessField = document.querySelector('.guessField');
+const answerSubmit = document.querySelector('.answerSubmit');
+
+let guessCount = 1;
+let resetButton;
+let answerCount =1;
+answer = answerGenerate();
+guessSubmit.addEventListener('click', checkGuess);
+answerSubmit.addEventListener('click', checkAnswer);
+
+function checkGuess(){
+  let hint='0000'
+  let userGuess = guessField.value;
+  if(guessCount === 1){ //hint field initialize
+    lastResult.textContent ='Previous guesses: ';
+  }
+  if(userGuess ===answer){ //True answer
+    hint = checkHint(userGuess);
+    lastResult.textContent += userGuess+'--'+hint+' '; //Print what user have guessed
+    lastResult.textContent += 'Congratulations!!';
+    setGameOver();
+  }
+  //else if(checkValid()){
+  else{
+    hint = checkHint(userGuess);
+    lastResult.textContent += userGuess+'--'+hint+' '; //Print what user have guessed
+  }
+  guessCount++;
+  guessField.value = '';
+  guessField.focus();
+  
+}
+function checkHint(userGuess){
+  let numberA =0;
+  let numberB =0;
+  let stringGuess =userGuess.split('');
+  let stringAnswer =answer.split('');
+  /*
+  console.log(stringGuess);
+  console.log(_userGuess);
+  console.log(stringAnswer);
+  console.log(answer);
+  */
+ stringGuess.forEach((item ,index) =>{ //check A
+   if(item ==stringAnswer[index]){
+     numberA++;
+   }
+ });
+
+ stringGuess.forEach((item) =>{ //check B
+   if(stringAnswer.indexOf(item) !=-1){
+     numberB++;
+   }
+ });
+ numberB -=numberA;
+  return String(numberA) +'A'+String(numberB)+'B';
+}
+function setGameOver(){
+  guessField.disabled = true;
+  guessSubmit.disabled = true;
+  resetButton = document.createElement('button');
+  resetButton.textContent = 'Start new game';
+  document.body.appendChild(resetButton);
+  resetButton.addEventListener('click', resetGame);
+}
+
+function resetGame(){
+  guessCount = 1;
+  answerCount=1;
+  const resetParas = document.querySelectorAll('p');
+  for (let i = 0 ; i < resetParas.length ; i++) {
+    resetParas[i].textContent = '';
+  }
+  resetButton.parentNode.removeChild(resetButton);
+  guessField.disabled = false;
+  guessSubmit.disabled = false;
+  guessField.value = '';
+  guessField.focus();
+  answerGenerate(answer);
+}
+
+function answerGenerate(){
+  return '6789';
+}
+
+function checkAnswer(){ 
+  if(answerCount===1){  
+    //answerCount=0;
+    let answerGuess ='';
+    let bitList =initialList();
+    
+    while(hint2A(answerHint) !=='4A0B'){
+      answerDecide(); //Choose guessing answer from list
+      answerCheck(); //Check hint
+      answerReduce(); //Reduce list by hint
+    }
+
+  }
+}
+
+function answerDecide(){}
+
+function answerCheck(){
+  //printSol(answerHint);
+}
+
+function answerReduce(){}
+
+function initialList(){
+  let bitList=[];
+  let bit1='0123456789'.split('');
+  let bit2=[];
+  let bit3=[];
+  let bit4=[];
+  for(let i =0;i<bit1.length;i++){
+    bit2[i]=bit1.slice(0);
+    bit2[i][bit2[i].indexOf(String(i))]='N';
+  }
+  for(let i =0;i<10;i++){bit3[i]=bit2.slice(0);}
+  for(let i =0;i<10;i++){
+    for(let j =0;j<10;j++){
+      if(bit2[i][j] === 'N'){
+        bit3[i][j]='N';
+      }
+      else{
+        bit3[i][j]=bit2[i].slice(0);
+        bit3[i][j][bit3[i][j].indexOf(String(j))]='N';
+      }    
+    }
+  }
+  console.log(bit3);
+  for(let i =0;i<10;i++){bit4=bit3.slice(0);}
+  for(let i =0;i<10;i++){
+    for(let j =0;j<10;j++){
+      let temp='';
+      for(let t=0;t<10;t++){
+        temp+=String(bit3[i][j][t]);
+      }
+      
+      for(let k =0;k<10;k++){
+        if(bit4[i][j][k] !=="N"){
+          bit4[i][j][k] =temp.split('');
+        }
+      }
+    }
+  }
+  for(let i=0;i<10;i++){
+    for(let j=0;j<10;j++){
+      if(bit4[i][j] !=='N'){
+        for(let k=0;k<10;k++){
+          if(bit4[i][j][k] !=='N'){
+            bit4[i][j][k][k]='N';
+          }
+        }
+      }
+    }   
+  }
+  console.log(bit4);
+  return bitList
+}
+
+function bitRandom(){
+  let a = Math.floor(Math.random()*9+1);
+  return a;
+}
+function hint2A(answerHint){
+  let temp = String(answerHint).split('');
+  return temp[0];
+}
+
+function hint2B(answerHint){
+  let temp = String(answerHint).split('');
+  return temp[2];
+}
+
+function printSol(answerHint){
+  answerResult.textContent+=answerHint+'/';//print on web
+}
+</script>
